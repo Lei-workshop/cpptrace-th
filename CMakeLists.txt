@@ -47,9 +47,9 @@ FetchContent_MakeAvailable(cpptrace)
 add_library(cpptrace_th_options INTERFACE)
 target_compile_definitions(
   cpptrace_th_options
-  INTERFACE CPPTRACE_TH_PRINT_SNIPPETS=$<BOOL:${CPPTRACE_TH_PRINT_SNIPPETS}>
-            CPPTRACE_TH_ENABLE_SKIP=$<BOOL:${CPPTRACE_TH_ENABLE_SKIP}>
-            CPPTRACE_TH_SKIP_REGEX=${CPPTRACE_TH_SKIP_REGEX})
+  INTERFACE CPPTRACE_TH_PRINT_SNIPPETS="$<BOOL:${CPPTRACE_TH_PRINT_SNIPPETS}>"
+            CPPTRACE_TH_ENABLE_SKIP="$<BOOL:${CPPTRACE_TH_ENABLE_SKIP}>"
+            "CPPTRACE_TH_SKIP_REGEX=R\"regex(${CPPTRACE_TH_SKIP_REGEX})regex\"")
 target_link_libraries(cpptrace_th_options INTERFACE cpptrace::cpptrace)
 
 add_library(cpptrace_th_static STATIC register.cpp)

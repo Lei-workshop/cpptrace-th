@@ -29,24 +29,23 @@ auto get_env_var(const char* env_var,
 }
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
-#define CPPTRACE_TH_STR(x) #x
-#define CPPTRACE_TH_XSTR(x) CPPTRACE_TH_STR(x)
-#define CPPTRACE_GET_CONFIG(name) \
-  get_env_var("CPPTRACE_TH_" #name, CPPTRACE_TH_XSTR(CPPTRACE_TH_##name))
+#define CPPTRACE_TH_EXPAND(x) x
+#define CPPTRACE_TH_GET_CONFIG(name) \
+  get_env_var("CPPTRACE_TH_" #name, CPPTRACE_TH_EXPAND(CPPTRACE_TH_##name))
 // NOLINTEND(cppcoreguidelines-macro-usage)
 
 auto print_snippets() -> bool {
-  static const auto kPrintSnippets = CPPTRACE_GET_CONFIG(PRINT_SNIPPETS);
+  static const auto kPrintSnippets = CPPTRACE_TH_GET_CONFIG(PRINT_SNIPPETS);
   return option_is_on(kPrintSnippets);
 }
 
 auto enable_skip_regex() -> bool {
-  static const auto kEnableSkipRegex = CPPTRACE_GET_CONFIG(ENABLE_SKIP);
+  static const auto kEnableSkipRegex = CPPTRACE_TH_GET_CONFIG(ENABLE_SKIP);
   return option_is_on(kEnableSkipRegex);
 }
 
 auto skip_regex() -> std::string {
-  static const auto kSkipRegex = CPPTRACE_GET_CONFIG(SKIP_REGEX);
+  static const auto kSkipRegex = CPPTRACE_TH_GET_CONFIG(SKIP_REGEX);
   return kSkipRegex;
 }
 
