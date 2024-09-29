@@ -7,30 +7,33 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # ---------- options ----------
-option(CPPTRACE_TH_PRINT_SNIPPETS "Print code snippets in trace" ON)
 option(CPPTRACE_TH_BUILD_EXAMPLE "Build examples" OFF)
-option(CPPTRACE_TH_ENABLE_SKIP_REGEX "Enable skip regex" ON)
+option(CPPTRACE_TH_PRINT_SNIPPETS "Print code snippets in trace" ON)
+option(CPPTRACE_TH_ENABLE_SKIP "Enable skip regex" ON)
 set(CPPTRACE_TH_SKIP_REGEX
     [=[
 \bstd::terminate\b]=]
     CACHE STRING "Frames before matched regex (included) will be omitted")
+option(CPPTRACE_TH_NO_ZSTD "Remove ZSTD support (speedup build)" ON)
 
 # ---------- libdwarf and cpptrace ----------
 include(FetchContent)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW) # allow setting options with `set`
 
-set(ENABLE_DECOMPRESSION FALSE)
-set(BUILD_DWARFDUMP FALSE)
-FetchContent_Declare(
-  libdwarf
-  GIT_REPOSITORY https://github.com/jeremy-rifkin/libdwarf-lite.git
-  GIT_TAG v0.11.0
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE TRUE SYSTEM)
-FetchContent_MakeAvailable(libdwarf)
+if(CPPTRACE_TH_NO_ZSTD)
+  set(ENABLE_DECOMPRESSION FALSE)
+  set(BUILD_DWARFDUMP FALSE)
+  FetchContent_Declare(
+    libdwarf
+    GIT_REPOSITORY https://github.com/jeremy-rifkin/libdwarf-lite.git
+    GIT_TAG v0.11.0
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+    OVERRIDE_FIND_PACKAGE TRUE SYSTEM)
+  FetchContent_MakeAvailable(libdwarf)
 
-set(CPPTRACE_USE_EXTERNAL_LIBDWARF TRUE)
+  set(CPPTRACE_USE_EXTERNAL_LIBDWARF TRUE)
+endif()
 FetchContent_Declare(
   cpptrace
   GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
@@ -44,10 +47,9 @@ FetchContent_MakeAvailable(cpptrace)
 add_library(cpptrace_th_options INTERFACE)
 target_compile_definitions(
   cpptrace_th_options
-  INTERFACE
-    CPPTRACE_TH_PRINT_SNIPPETS=$<BOOL:${CPPTRACE_TH_PRINT_SNIPPETS}>
-    CPPTRACE_TH_ENABLE_SKIP_REGEX=$<BOOL:${CPPTRACE_TH_ENABLE_SKIP_REGEX}>
-    CPPTRACE_TH_SKIP_REGEX=${CPPTRACE_TH_SKIP_REGEX})
+  INTERFACE CPPTRACE_TH_PRINT_SNIPPETS=$<BOOL:${CPPTRACE_TH_PRINT_SNIPPETS}>
+            CPPTRACE_TH_ENABLE_SKIP=$<BOOL:${CPPTRACE_TH_ENABLE_SKIP}>
+            CPPTRACE_TH_SKIP_REGEX=${CPPTRACE_TH_SKIP_REGEX})
 target_link_libraries(cpptrace_th_options INTERFACE cpptrace::cpptrace)
 
 add_library(cpptrace_th_object OBJECT register.cpp)

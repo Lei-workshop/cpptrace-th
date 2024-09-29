@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
@@ -13,6 +14,13 @@
 namespace {
 
 namespace config {
+
+auto option_is_on(std::string option) -> bool {
+  std::transform(option.begin(), option.end(), option.begin(),
+                 [](unsigned char ch) { return std::tolower(ch); });
+  return !(option == "0" || option == "false" || option == "off" ||
+           option == "no" || option == "n");
+}
 
 auto get_env_var(const char* env_var,
                  const char* default_value) -> std::string {
@@ -29,12 +37,12 @@ auto get_env_var(const char* env_var,
 
 auto print_snippets() -> bool {
   static const auto kPrintSnippets = CPPTRACE_GET_CONFIG(PRINT_SNIPPETS);
-  return kPrintSnippets != "0";
+  return option_is_on(kPrintSnippets);
 }
 
 auto enable_skip_regex() -> bool {
-  static const auto kEnableSkipRegex = CPPTRACE_GET_CONFIG(ENABLE_SKIP_REGEX);
-  return kEnableSkipRegex != "0";
+  static const auto kEnableSkipRegex = CPPTRACE_GET_CONFIG(ENABLE_SKIP);
+  return option_is_on(kEnableSkipRegex);
 }
 
 auto skip_regex() -> std::string {
