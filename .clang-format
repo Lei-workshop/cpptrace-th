@@ -1,0 +1,20 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+BreakAfterAttributes: Leave
+CommentPragmas: '^ (IWYU pragma:|NOLINT(BEGIN|END|NEXTLINE)?(\(.+\))?:? )'
+DerivePointerAlignment: false
+InsertNewlineAtEOF: true
+IncludeCategories:
+  - Regex:         '^("|<)(cpptrace).*'
+    Priority:      40
+    CaseSensitive: false
+  - Regex:         '^<.*\.h>$'
+    Priority:      20
+    CaseSensitive: false
+  - Regex:         '^<.*'
+    Priority:      30
+    CaseSensitive: false
+  - Regex:         '.*'
+    Priority:      100
+    CaseSensitive: false
