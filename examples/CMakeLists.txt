@@ -1,7 +1,7 @@
 # Add an example to the build
 function(add_example name)
   add_executable(${name} ${name}.cpp)
-  target_link_libraries(${name} PRIVATE cpptrace_th::object)
+  target_link_libraries(${name} PRIVATE cpptrace_th::static)
 endfunction()
 
 add_example(call_terminate)

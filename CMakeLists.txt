@@ -52,8 +52,12 @@ target_compile_definitions(
             CPPTRACE_TH_SKIP_REGEX=${CPPTRACE_TH_SKIP_REGEX})
 target_link_libraries(cpptrace_th_options INTERFACE cpptrace::cpptrace)
 
-add_library(cpptrace_th_object OBJECT register.cpp)
-target_link_libraries(cpptrace_th_object PRIVATE cpptrace_th_options)
+add_library(cpptrace_th_static STATIC register.cpp)
+target_link_libraries(cpptrace_th_static PRIVATE cpptrace_th_options)
+add_library(cpptrace_th_static_whole_archive INTERFACE)
+target_link_libraries(
+  cpptrace_th_static_whole_archive
+  INTERFACE -Wl,--whole-archive cpptrace_th_static -Wl,--no-whole-archive)
 
 add_library(cpptrace_th_shared SHARED register.cpp)
 target_link_libraries(cpptrace_th_shared PRIVATE cpptrace_th_options)
@@ -67,5 +71,5 @@ if(CPPTRACE_TH_BUILD_EXAMPLE)
 endif()
 
 # ---------- export ----------
-add_library(cpptrace_th::object ALIAS cpptrace_th_object)
+add_library(cpptrace_th::static ALIAS cpptrace_th_static_whole_archive)
 add_library(cpptrace_th::shared ALIAS cpptrace_th_shared_no_as_needed)
